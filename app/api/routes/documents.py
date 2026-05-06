@@ -79,17 +79,18 @@ async def get_documents(
 @router.delete(
     "/{document_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    response_class=Response,
     summary="Delete a document by ID",
     dependencies=[Depends(verify_api_key)],
 )
 async def remove_document(
     document_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-) -> None:
+):
     deleted = await delete_document(db, document_id)
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Document {document_id} not found.",
         )
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
